@@ -76,8 +76,12 @@ func (m *SnippetModel) Insert(title, content, expires string) (int, error) {
 		return 0, error
 	}
 	fmt.Println(stml)
+
 	var lastId int
-	err := m.DB.QueryRow(context.Background(), stml, title, content, time.Now(), time.Now().AddDate(0,0,days)).Scan(&lastId)
+	created := time.Now()
+	expiresDate := time.Now().AddDate(0,0,days)
+
+	err := m.DB.QueryRow(context.Background(), stml, title, content, created, expiresDate).Scan(&lastId)
 	if err!= nil {
 		return 0, err
 	}
