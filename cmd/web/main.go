@@ -4,17 +4,20 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/golangcollege/sessions"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"awesomeProject3/pkg/models/postgreSql"
+	"time"
 )
 
 type application struct{
 	errorLog *log.Logger
 	infoLog *log.Logger
+	session *sessions.Session
 	snippets *postgreSql.SnippetModel
 	templateCache map[string]*template.Template
 }
@@ -23,6 +26,7 @@ func main(){
 	//Setting run with custom port
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	dsn := flag.String("dsn", "postgres://web:pass@localhost:5432/snippetbox", "PostgreSQL data source name")
+	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")
 	flag.Parse()
 
 	//Info logger
@@ -45,10 +49,15 @@ func main(){
 		errorLog.Fatal(err)
 	}
 
+	session := sessions.New([]byte(*secret))
+	session.Lifetime = 12 * time.Hour
+
+
 	//Creating application
 	app := &application{
 		errorLog: errorLog,
 		infoLog: infoLog,
+		session: session,
 		snippets: &postgreSql.SnippetModel{DB: db},
 		templateCache: templateCache,
 	}
