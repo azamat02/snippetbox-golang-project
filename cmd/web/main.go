@@ -1,6 +1,7 @@
 package main
 
 import (
+	"awesomeProject3/pkg/models/postgreSql"
 	"context"
 	"flag"
 	"fmt"
@@ -10,7 +11,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"awesomeProject3/pkg/models/postgreSql"
 	"time"
 )
 
@@ -24,8 +24,9 @@ type application struct{
 
 func main(){
 	//Setting run with custom port
+	DATABASE_URL := os.Getenv("DATABASE_URL")
 	addr := flag.String("addr", ":4000", "HTTP network address")
-	dsn := flag.String("dsn", "postgres://web:pass@localhost:5432/snippetbox", "PostgreSQL data source name")
+	dsn := flag.String("dsn", DATABASE_URL, "PostgreSQL data source name")
 	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")
 	flag.Parse()
 
@@ -75,7 +76,6 @@ func main(){
 	if err!=nil {
 		errorLog.Fatal(err)
 	}
-
 }
 
 func openDB(dsn string) (*pgxpool.Pool, error) {
