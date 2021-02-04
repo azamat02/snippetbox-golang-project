@@ -1,0 +1,11 @@
+version: "3.3"
+
+services:
+  snippetbox:
+    build: .
+    ports:
+    - 5432:5432
+    - 4000:4000
+    environment:
+      DATABASE_URL: postgres://web:pass@192.168.1.67:5432/snippetbox
+
